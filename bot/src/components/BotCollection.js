@@ -1,17 +1,38 @@
-import React from 'react';
-import Bot from './Bot';
+import React, { useState, useEffect } from 'react';
 
-function BotCollection({ bots, enlistBot }) {
+const BotCollection = ({ enlistBot }) => {
+  const [bots, setBots] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://my-json-server.typicode.com/victorbiikipkoech/Bot-Battlr/bots/');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setBots(data);
+      } catch (error) {
+        console.error('Error fetching bots:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <div className="bot-collection">
+    <div>
       <h2>Bot Collection</h2>
-      <div className="bots">
-        {bots.map((bot) => (
-          <Bot key={bot.id} bot={bot} enlistBot={() => enlistBot(bot)} />
+      <ul>
+        {bots.map(bot => (
+          <li key={bot.id}>
+            <img src={bot.avatar_url} alt={`Avatar of ${bot.name}`} /> 
+            {bot.name} - <button onClick={() => enlistBot(bot)}>Enlist</button>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
-}
+};
 
 export default BotCollection;
